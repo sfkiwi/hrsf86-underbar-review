@@ -491,6 +491,7 @@
           orderTraversed.push(item);
           // Add a line here that makes this test pass
           // for a working implementation of reduce
+          //comment
           return memo;
         }, 10);
 
