@@ -33,7 +33,7 @@
     describe('first', function() {
 
       it('should be able to pull out the first element of an array', function() {
-        expect(_.first([1, 2, 3])).to.equal([1, 2, 3]);
+        expect(_.first([1, 2, 3])).to.equal(1);
       });
 
       it('should accept an index argument', function() {
@@ -121,12 +121,11 @@
       it('should iterate over arrays and provide access to each index', function() {
         var letters = ['a', 'b', 'c'];
         var iterations = [];
-
         _.each(letters, function(letter, index) {
           iterations.push([letter, index]);
         });
 
-        expect(iterations).to.eql(['a', 'b', 'c']);
+        expect(iterations).to.eql([['a', 0], ['b', 1], ['c', 2]]);
       });
 
       it('should iterate over arrays and provide access to the original collection', function() {
@@ -329,11 +328,32 @@
       });
 
       it('should handle iterators that work with a sorted array', function() {
-        var iterator = function(value) { return value === 1; };
+        var iterator = function(value) { 
+          return value === 1; 
+        };
         var numbers = [1, 2, 2, 3, 4, 4];
 
-        expect(_.uniq(numbers)).to.eql([1, 2]);
+        expect(_.uniq(numbers, true, iterator)).to.eql([1, 2]);
       });
+
+      it('should handle iterators that work with a sorted array of strings', function() {
+        var iterator = function(value) { 
+          if (value === 'kiwi' || value === 'granny' || value === 'green tomato') {
+            return 'green';
+          }
+          if (value === 'banana' || value === 'lemon') {
+            return 'yellow';
+          }
+          if (value === 'orange') {
+            return 'orange';
+          }  
+        };
+        var fruits = ['kiwi', 'granny', 'green tomato', 'banana', 'orange', 'lemon'];
+
+        expect(_.uniq(fruits, true, iterator)).to.eql(['kiwi', 'banana', 'orange']);
+      });
+
+
 
       it('should produce a brand new array instead of modifying the input array', function() {
         var numbers = [1, 2, 1, 3, 1, 4];
@@ -399,7 +419,7 @@
           { name: 'curly', age: 50 }
         ];
 
-        expect(_.pluck(people, 'name')).to.equal(['moe', 'curly']);
+        expect(_.pluck(people, 'name')).to.eql(['moe', 'curly']);
       });
 
       it('should not modify the original array', function() {
@@ -410,7 +430,7 @@
 
         _.pluck(people, 'name');
 
-        expect(people).to.equal([{ name: 'moe', age: 30 }, { name: 'curly', age: 50 }]);
+        expect(people).to.eql([{ name: 'moe', age: 30 }, { name: 'curly', age: 50 }]);
       });
     });
 
@@ -500,7 +520,7 @@
         expect(result).to.equal(4);
       });
 
-      it('Fill me in with a description of the behavior this test is checking for', function() {
+      it('should pass if accumulator is zero', function() {
         var result = _.reduce([1, 2, 3], function(memo, item) {
           return memo * item;
         }, 0);
