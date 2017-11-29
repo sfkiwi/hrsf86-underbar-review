@@ -208,13 +208,19 @@
     } else {
       ret = accumulator;
     
-      collection.forEach(function(element) {
-      //call the iterator on each element
-        ret = iterator(ret, element);
+      if (Array.isArray(collection)) {
+        collection.forEach(function(element) {
+          //call the iterator on each element
+          ret = iterator(ret, element);
           
-      //store the result of the iterator as the next accumulator
-      //pass in the accumulator to the iterator
-      });
+          //store the result of the iterator as the next accumulator
+          //pass in the accumulator to the iterator
+        });
+      } else if (collection instanceof Object) {
+        for (var key in collection) {
+          ret = iterator(ret, collection[key]);
+        }
+      }
     }
 
     return ret; 
@@ -227,6 +233,9 @@
     // TIP: Many iteration problems can be most easily expressed in
     // terms of reduce(). Here's a freebie to demonstrate!
     return _.reduce(collection, function(wasFound, item) {
+      //it starts out with false and if the iterator returns true
+      //at any point then the entire function returns true.
+
       if (wasFound) {
         return true;
       }
@@ -238,7 +247,21 @@
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
+    return _.reduce(collection, function(allTrue, item) {
+      //it starts out with true and if the iterator returns false
+      //at any point then the entire function returns false.
+      
+      //item already found, just return true to end of hte arrya
+      if (allTrue) {
+        //check the iterator
+        return iterator === undefined ? Boolean(item) : Boolean(iterator(item));
+      } else {
+        return false;
+      }
+    }, true);
   };
+
+
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
